@@ -6,6 +6,7 @@ plugins {
   id 'org.cyclonedx.bom' version '1.8.2'
   id 'io.spring.javaformat' version '0.0.41'
   id "io.spring.nohttp" version "0.0.11"
+  id "com.teamscale" version "30.0.2"
 }
 
 apply plugin: 'java'
@@ -67,11 +68,39 @@ checkstyleNohttp {
   configFile = file('src/checkstyle/nohttp-checkstyle.xml')
 }
 
+teamscale{
+  server{
+    url='http://localhost:8080/'
+    userName= 'englandeliza'
+    userAccessToken= '6MeJT187nvemZhMPHRkxfrjveqcQxHeI'
+    project= 'petclinic'
+  }
+
+  report{
+    testwiseCoverage{
+      partition= 'Unit Tests'
+
+    }
+  }
+
+
+}
+
 tasks.named("formatMain").configure { dependsOn("checkstyleMain") }
 tasks.named("formatMain").configure { dependsOn("checkstyleNohttp") }
 
 tasks.named("formatTest").configure { dependsOn("checkstyleTest") }
 tasks.named("formatTest").configure { dependsOn("checkstyleNohttp") }
+
+tasks.register('tiaTests',com.teamscale.TestImpacted){
+  useJUnitPlatform()
+  jacoco{
+    includes = ["tia.*","org.jabref.*"]
+  }
+
+  ignoreFailures = true
+
+}
 
 checkstyleAot.enabled = false
 checkstyleAotTest.enabled = false
